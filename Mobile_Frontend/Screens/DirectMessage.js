@@ -22,7 +22,7 @@ import uuid from "uuid";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-let url = "http://10.74.15.133:80/Backend";
+let url = "http://YOUR_IP:80/Backend";
 
 export const MessageContext = React.createContext();
 

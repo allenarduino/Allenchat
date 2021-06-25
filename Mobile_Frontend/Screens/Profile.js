@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions
 } from "react-native";
+import { ContainerScroll } from "./styles";
 import { Header } from "react-native-elements";
 import { AuthContext } from "../App";
 import jwt_decode from "jwt-decode";
@@ -15,7 +16,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-let url = "http://10.74.15.133:80/Backend";
+let url = "http://YOUR_IP:80/Backend";
 
 export const ProfileContext = React.createContext();
 

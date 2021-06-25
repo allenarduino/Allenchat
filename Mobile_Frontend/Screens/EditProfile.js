@@ -15,7 +15,7 @@ import { AuthContext } from "../App";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-let url = "http://10.74.15.61:80/Backend";
+let url = "http://YOUR_IP:80/Backend";
 
 const EditProfile = ({ navigation, route }) => {
   const [full_name, setfullName] = React.useState("");

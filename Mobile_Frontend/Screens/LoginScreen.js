@@ -17,7 +17,7 @@ const validEmailRegex = RegExp(
   /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 );
 
-let url = "http://10.74.15.61:80/Backend";
+let url = "http://YOUR_IP:80/Backend";
 
 const LoginScreen = ({ navigation }) => {
   const initialState = {

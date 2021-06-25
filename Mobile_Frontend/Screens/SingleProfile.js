@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions
 } from "react-native";
+import { ContainerScroll } from "./styles";
 import { Header } from "react-native-elements";
 import { AuthContext } from "../App";
 import jwt_decode from "jwt-decode";
@@ -16,7 +17,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-let url = "http://10.74.15.133:80";
+let url = "http://YOUR_IP:80";
 
 const SingleProfile = ({ route, navigation }) => {
   const { state, dispatch } = React.useContext(AuthContext);
@@ -106,18 +107,19 @@ const SingleProfile = ({ route, navigation }) => {
         />
       ))}
       {loading ? (
-        <View
-          style={{
+        <ContainerScroll>
+          style=
+          {{
             justifyContent: "center",
             alignItems: "center",
             marginTop: HEIGHT / 3
           }}
-        >
+          >
           <Image
             source={require("../Images/loader5.gif")}
             style={{ height: 100, width: 100 }}
           />
-        </View>
+        </ContainerScroll>
       ) : (
         <View>
           {myprofile.map(p => (
