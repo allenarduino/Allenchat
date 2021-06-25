@@ -1,4 +1,4 @@
-# Merllon
+# Allenchat
 
 - Allenchat is a simple social chatting application.
 - A user of this app can edit his or her profile,view users or chat users
