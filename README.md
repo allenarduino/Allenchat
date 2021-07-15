@@ -1,6 +1,7 @@
 # Allenchat
 
 - Allenchat is a simple social chatting application.
+- It implements the long-polling concept
 - A user of this app can edit his or her profile,view users or chat users
 - The back end is powered by PHP and Mysql database.
 - The front end is powered by React Native expo.
