@@ -10,7 +10,7 @@ const options = {
   allowsEditing: true
 };
 
-export default class ChooseUserImg extends Component {
+const ChooseUserImg = ({ navigation }) => {
   state = {};
 
   _selectPhoto = async () => {
@@ -18,7 +18,7 @@ export default class ChooseUserImg extends Component {
     if (status) {
       const result = await ImagePicker.launchImageLibraryAsync(options);
       if (!result.cancelled) {
-        this.props.navigation.navigate("UpdateUserImg", { image: result.uri });
+        navigation.navigate("UpdateUserImg", { image: result.uri });
       }
     }
   };
@@ -28,26 +28,26 @@ export default class ChooseUserImg extends Component {
     if (status) {
       const result = await ImagePicker.launchCameraAsync(options);
       if (!result.cancelled) {
-        this.props.navigation.navigate("UpdateUserImg", { image: result.uri });
+        navigation.navigate("UpdateUserImg", { image: result.uri });
       }
     }
   };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text onPress={this._selectPhoto} style={styles.text}>
-          <Icon name="image" size={20} />
-          Select Photo
-        </Text>
-        <Text onPress={this._takePhoto} style={styles.text}>
-          <Icon name="camera" size={20} />
-          Take Photo
-        </Text>
-      </View>
-    );
-  }
-}
+  return (
+    <View style={styles.container}>
+      <Text onPress={this._selectPhoto} style={styles.text}>
+        <Icon name="image" size={20} />
+        Select Photo
+      </Text>
+      <Text onPress={this._takePhoto} style={styles.text}>
+        <Icon name="camera" size={20} />
+        Take Photo
+      </Text>
+    </View>
+  );
+};
+
+export default ChooseUserImg;
 
 const styles = StyleSheet.create({
   container: {
