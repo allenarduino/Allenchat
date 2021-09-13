@@ -23,7 +23,7 @@ const RootStack = createStackNavigator(
   },
 
   {
-    initialRouteName: "LoginScreen"
+    initialRouteName: "SignupScreen"
   }
 );
 

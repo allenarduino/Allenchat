@@ -5,19 +5,21 @@ import {
   View,
   StyleSheet,
   TextInput,
-  Image
+  Image,
+  ScrollView
 } from "react-native";
 import BottomTab from "../Navigation/BottomNav";
 import AsyncStorage from "@react-native-community/async-storage";
-import SwitchNav from "../Navigation/SwitchNavOne";
 import { AppStyles } from "../AppStyles";
-
+import { Header } from "react-native-elements";
+import Icon from "react-native-vector-icons/Ionicons";
+import URL from "./url";
 //I'm using this for email validation
 const validEmailRegex = RegExp(
   /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 );
 
-let url = "http://YOUR_IP:80";
+let url = URL();
 
 class SignupScreen extends React.Component {
   constructor(props) {
@@ -75,10 +77,11 @@ class SignupScreen extends React.Component {
   };
 
   signup = () => {
-    const data = new FormData();
-    data.append("name", this.state.name);
-    data.append("email", this.state.email);
-    data.append("password", this.state.password);
+    const data = {
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password
+    };
 
     if (
       this.state.name_is_valid == true &&
@@ -91,9 +94,13 @@ class SignupScreen extends React.Component {
       this.setState({
         loading: true
       });
-      fetch(`${url}/code_reservoir/user_signup.php`, {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      fetch(`${url}/register`, {
         method: "POST",
-        body: data
+        body: JSON.stringify(data),
+        headers: myHeaders
       })
         .then(res => res.json())
         .then(data => {
@@ -109,7 +116,7 @@ class SignupScreen extends React.Component {
           }
         })
         .catch(err => {
-          console.log(err);
+          alert(err);
           this.setState({ loading: false });
         });
     } else {
@@ -119,85 +126,109 @@ class SignupScreen extends React.Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={[styles.title, styles.leftTitle]}>Sign Up</Text>
-        <View style={styles.InputContainer}>
-          <TextInput
-            style={styles.body}
-            placeholder="Name"
-            onChangeText={name => {
-              this.nameInputChange(name);
-              this.setState({ name });
-            }}
-            value={this.state.name}
-            placeholderTextColor={AppStyles.color.grey}
-            underlineColorAndroid="transparent"
-          />
-        </View>
-        {this.state.name_is_valid == false ? (
-          <Text style={{ color: "red", fontSize: 14 }}>
-            Name must not be less than 6 characters
-          </Text>
-        ) : null}
-        <View style={styles.InputContainer}>
-          <TextInput
-            style={styles.body}
-            placeholder="Email "
-            onChangeText={email => {
-              this.emailInputchange(email);
-              this.setState({ email });
-            }}
-            value={this.state.email}
-            placeholderTextColor={AppStyles.color.grey}
-            underlineColorAndroid="transparent"
-          />
-        </View>
-        {this.state.error == true ? (
-          <Text style={{ color: "red", fontSize: 14 }}>
-            User with email already exists
-          </Text>
-        ) : null}
-
-        {this.state.email_is_valid == false ? (
-          <Text style={{ color: "red", fontSize: 14 }}>
-            Please your email is not valid
-          </Text>
-        ) : null}
-
-        <View style={styles.InputContainer}>
-          <TextInput
-            style={styles.body}
-            secureTextEntry={true}
-            placeholder="Password"
-            onChangeText={password => {
-              this.passwordInputchange(password);
-              this.setState({ password });
-            }}
-            value={this.state.password}
-            placeholderTextColor={AppStyles.color.grey}
-            underlineColorAndroid="transparent"
-          />
-        </View>
-        {this.state.password_is_valid == false ? (
-          <Text style={{ color: "red", fontSize: 14 }}>
-            Password must not be less than 6 characters
-          </Text>
-        ) : null}
-        {this.state.loading == false ? (
-          <TouchableOpacity style={styles.loginContainer} onPress={this.signup}>
-            <Text style={styles.loginText}>Sign up</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.loginContainer}>
-            <Text style={styles.loginText}>Loading...</Text>
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          style={{ marginTop: 20 }}
-          onPress={() => this.props.navigation.navigate("LoginScreen")}
+      <View
+        style={{
+          backgroundColor: "rgb(39, 12, 75)",
+          //justifyContent: 'space-around',
+          flex: 1
+        }}
+      >
+        <View
+          style={{
+            marginTop: 40,
+            justifyContent: "center",
+            alignItems: "center",
+            height: 70
+          }}
         >
-          <Text style={{ color: "rgb(95, 32, 155)" }}>Already a member?</Text>
-        </TouchableOpacity>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+            Signup
+          </Text>
+        </View>
+        <View style={styles.container}>
+          <View style={styles.InputContainer}>
+            <TextInput
+              style={styles.body}
+              placeholder="Full Name"
+              onChangeText={name => {
+                this.nameInputChange(name);
+                this.setState({ name });
+              }}
+              value={this.state.name}
+              placeholderTextColor={AppStyles.color.grey}
+              underlineColorAndroid="transparent"
+            />
+          </View>
+          {this.state.name_is_valid == false ? (
+            <Text style={{ color: "red", fontSize: 14 }}>
+              Name must not be less than 6 characters
+            </Text>
+          ) : null}
+          <View style={styles.InputContainer}>
+            <TextInput
+              style={styles.body}
+              placeholder="Email "
+              onChangeText={email => {
+                this.emailInputchange(email);
+                this.setState({ email });
+              }}
+              value={this.state.email}
+              placeholderTextColor={AppStyles.color.grey}
+              underlineColorAndroid="transparent"
+            />
+          </View>
+          {this.state.error == true ? (
+            <Text style={{ color: "red", fontSize: 14 }}>
+              User with email already exists
+            </Text>
+          ) : null}
+
+          {this.state.email_is_valid == false ? (
+            <Text style={{ color: "red", fontSize: 14 }}>
+              Please your email is not valid
+            </Text>
+          ) : null}
+
+          <View style={styles.InputContainer}>
+            <TextInput
+              style={styles.body}
+              secureTextEntry={true}
+              placeholder="Password"
+              onChangeText={password => {
+                this.passwordInputchange(password);
+                this.setState({ password });
+              }}
+              value={this.state.password}
+              placeholderTextColor={AppStyles.color.grey}
+              underlineColorAndroid="transparent"
+            />
+          </View>
+          {this.state.password_is_valid == false ? (
+            <Text style={{ color: "red", fontSize: 14 }}>
+              Password must not be less than 6 characters
+            </Text>
+          ) : null}
+          {this.state.loading == false ? (
+            <TouchableOpacity
+              style={styles.loginContainer}
+              onPress={this.signup}
+            >
+              <Text style={styles.loginText}>Sign up</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.loginContainer}>
+              <Text style={styles.loginText}>Loading...</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={{ marginTop: 20 }}
+            onPress={() => this.props.navigation.navigate("LoginScreen")}
+          >
+            <Text style={{ color: "rgb(39, 12, 75)", fontWeight: "bold" }}>
+              Already a member?
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -208,7 +239,10 @@ export default SignupScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40
   },
   or: {
     fontFamily: AppStyles.fontName.main,
@@ -240,8 +274,8 @@ const styles = StyleSheet.create({
   },
   loginContainer: {
     width: AppStyles.buttonWidth.main,
-    backgroundColor: AppStyles.color.tint,
-    borderRadius: AppStyles.borderRadius.main,
+    backgroundColor: "rgb(39, 12, 75)",
+    borderRadius: 100,
     padding: 10,
     marginTop: 30,
     alignItems: "center"
@@ -280,17 +314,3 @@ const styles = StyleSheet.create({
     color: AppStyles.color.text
   }
 });
-
-/*
-const mapStateToProps = (state) => {
-    return { token: state.token,}
- };
-
-  
-
-const mapDispatchToProps = dispatch => ({
-    login:dispatch(login)
-});
-
- export default connect(mapStateToProps,mapDispatchToProps)(Login);
-*/

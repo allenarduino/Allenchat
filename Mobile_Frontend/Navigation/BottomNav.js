@@ -1,112 +1,142 @@
 import React from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
 import {
-  createBottomTabNavigator,
-  createAppContainer,
-  createSwitchNavigator
-} from "react-navigation";
-import { createMaterialBottomTabNavigator } from "react-navigation-material-bottom-tabs";
-import { createStackNavigator } from "react-navigation-stack";
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  AsyncStorage,
+  TouchableOpacity
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import ProfileStack from "./ProfileStack";
+import { FontAwesomeIcon } from "react-native-vector-icons/FontAwesome5";
+import {
+  NavigationContainer,
+  useNavigationState
+} from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import PeopleStack from "./PeopleStack";
-import People from "../Screens/People";
-import Profile from "../Screens/Profile";
+import ChatStack from "./ChatStack";
+import ProfileStack from "./ProfileStack";
 
-const BottomTab = createMaterialBottomTabNavigator({
-  PeopleStack: {
-    screen: PeopleStack,
-    navigationOptions: {
-      tabBarLabel: "People",
-      activeColor: "rgb(95, 32, 155)",
-      inactiveColor: "black",
-      barStyle: { backgroundColor: "#fff" },
-      tabBarIcon: ({ tintColor }) => (
-        <Icon name="people-outline" size={25} color={tintColor} />
-      )
+const Tab = createBottomTabNavigator();
+
+function BottomTab() {
+  const getTabBarVisibility = route => {
+    const routeName = route.state
+      ? route.state.routes[route.state.index].name
+      : "";
+
+    if (routeName === "DirectMessage") {
+      return false;
     }
-  },
 
-  ProfileStack: {
-    screen: ProfileStack,
-    navigationOptions: {
-      tabBarLabel: "Profile",
-      activeColor: "rgb(95, 32, 155)",
-      inactiveColor: "black",
-      barStyle: { backgroundColor: "#fff" },
-      tabBarIcon: ({ tintColor }) => (
-        <Icon name="person-outline" size={25} color={tintColor} />
-      )
-    }
-  }
-});
+    return true;
+  };
+  return (
+    <NavigationContainer>
+      <Tab.Navigator
+        tabBarOptions={{
+          showLabel: false,
+          style: {
+            zIndex: 1,
+            backgroundColor: "rgb(39, 12, 75)",
+            alignItems: "center",
+            textAlign: "center",
+            //  borderTopLeftRadius: 50,
+            // borderTopRightRadius: 50,
+            height: 55
+          }
+        }}
+        mode="modal"
+      >
+        <Tab.Screen
+          name="ChatSection"
+          component={ChatStack}
+          options={({ route }) => ({
+            tabBarVisible: getTabBarVisibility(route),
+            tabBarLabel: "",
+            inactiveColor: "black",
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Icon name="chatbox-outline" size={26} color="#fff" />
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontSize: 12
+                  }}
+                >
+                  Chats
+                </Text>
+              </View>
+            )
+          })}
+        />
 
-export default createAppContainer(BottomTab);
+        <Tab.Screen
+          name="PeopleStack"
+          component={PeopleStack}
+          options={({ route }) => ({
+            tabBarLabel: "Users",
+            activeColor: "rgb(179, 7, 127)",
+            tabBarVisible: getTabBarVisibility(route),
+            inactiveColor: "black",
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Icon name="people-outline" size={26} color="#fff" />
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontSize: 12
+                  }}
+                >
+                  Users
+                </Text>
+              </View>
+            )
+          })}
+        />
 
-/*import React from 'react';
-import { StyleSheet, Text, View,Dimensions,AsyncStorage } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Profile from '../Screens/Profile';
-import Home from '../Screens/Home';
-import Login from '../Screens/Login';
-import { FontAwesome } from "react-native-vector-icons";
+        <Tab.Screen
+          name="ProfileStack"
+          component={ProfileStack}
+          options={{
+            tabBarLabel: "Profile",
+            activeColor: "rgb(179, 7, 127)",
+            inactiveColor: "black",
 
-
-import { NavigationContainer} from '@react-navigation/native';
-
-
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-const Tab=createBottomTabNavigator();
-
-function BottomTab(){
-    return(
-        
-   <Tab.Navigator
-  tabBarOptions={{
-      activeTintColor:"rgb(179, 7, 127)",
-      
-  }}
-  
-   >
-<Tab.Screen
-name="Home"
-component={Home}
-options={{
-    tabBarLabel:"Home",
-    activeColor:"rgb(179, 7, 127)",
-    inactiveColor:"black", 
-    tabBarIcon:({color})=>(
-        <Icon name="ios-home"  color={color} size={26} />
-    )
-    
-}}
-/>
-
-
-<Tab.Screen
-name="Profile"
-component={Profile}
-options={{
-    tabBarLabel:"Profile",
-    activeColor:"rgb(179, 7, 127)",
-    inactiveColor:"black",
-
-    tabBarIcon:({color})=>(
-        <Icon name="ios-person"  color={color} size={26} />
-    )
-}}
-/>
-
-</Tab.Navigator>
-
-    )
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <Icon name="person-outline" size={26} color="#fff" />
+                <Text
+                  style={{
+                    color: "#fff",
+                    fontSize: 12
+                  }}
+                >
+                  Profile
+                </Text>
+              </View>
+            )
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
 }
 
-
-
-  
-
-
 export default BottomTab;
-
-*/

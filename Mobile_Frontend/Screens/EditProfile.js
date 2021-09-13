@@ -10,38 +10,44 @@ import {
   Image
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { AuthContext } from "../App";
+import { AuthContext } from "../contexts/AuthContextProvider";
+import { ProfileContext } from "../contexts/ProfileContextProvider";
+import URL from "./url";
+import { useIsFocused } from "@react-navigation/native";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-let url = "http://YOUR_IP:80/Backend";
-
 const EditProfile = ({ navigation, route }) => {
   const [full_name, setfullName] = React.useState("");
   const [bio, setBio] = React.useState("");
+  const [my_profile, setMyProfile] = React.useState([]);
   const [loadingName, controlNameLoading] = React.useState(false);
   const [loadingBio, controlBioLoading] = React.useState(false);
-  const { state } = React.useContext(AuthContext);
+  const [loggedOutLoading, controlLogoutLoading] = React.useState(false);
+  const { auth_state, auth_dispatch } = React.useContext(AuthContext);
+  const { profile_state, profile_dispatch } = React.useContext(ProfileContext);
+
+  let url = URL();
+  const isFocused = useIsFocused();
 
   const update_name = () => {
     if (full_name == "") {
       alert("Name must not be empty");
     } else {
       controlNameLoading(true);
-      const formdata = new FormData();
-      formdata.append("full_name", full_name);
-      fetch(`${url}/update_name.php`, {
+      const myHeaders = new Headers();
+      myHeaders.append("x-access-token", auth_state.token);
+      myHeaders.append("Content-Type", "application/json");
+      fetch(`${url}/update_name`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${state.token}`
-        },
-        body: formdata
+        headers: myHeaders,
+        body: JSON.stringify({ full_name: full_name })
       })
         .then(res => res.json())
         .then(data => {
           controlNameLoading(false);
-          alert(data);
+          alert(data.message);
         })
         .catch(err => {
           console.log(err);
@@ -55,19 +61,18 @@ const EditProfile = ({ navigation, route }) => {
       alert("Your bio must not be empty");
     } else {
       controlBioLoading(true);
-      const formdata = new FormData();
-      formdata.append("bio", bio);
-      fetch(`${url}/update_bio.php`, {
+      const myHeaders = new Headers();
+      myHeaders.append("x-access-token", auth_state.token);
+      myHeaders.append("Content-Type", "application/json");
+      fetch(`${url}/update_bio`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${state.token}`
-        },
-        body: formdata
+        headers: myHeaders,
+        body: JSON.stringify({ bio: bio })
       })
         .then(res => res.json())
         .then(data => {
           controlBioLoading(false);
-          alert(data);
+          alert(data.message);
         })
         .catch(err => {
           console.log(err);
@@ -76,96 +81,110 @@ const EditProfile = ({ navigation, route }) => {
     }
   };
 
+  const logOut = () => {
+    controlLogoutLoading(true);
+    let data = new FormData();
+    data.append("token", auth_state.token);
+    fetch(`${url}/log_out.php`, {
+      method: "POST",
+      body: data
+    })
+      .then(res => res.json())
+      .then(data => {
+        dispatch({ type: "LOGOUT" });
+      })
+      .catch(err => console.log(err));
+  };
+
   return (
     <View style={{ flex: 1 }}>
-      {state.myprofile.map(p => (
-        <ScrollView>
-          <View>
+      <ScrollView>
+        <View>
+          <Image
+            source={{ uri: `${url}/${route.params.coverphoto}` }}
+            style={styles.coverPhoto}
+          />
+
+          <Icon
+            name="camera"
+            size={35}
+            color="#fff"
+            onPress={() => navigation.navigate("ChooseCoverPhoto")}
+            style={{
+              marginLeft: "80%",
+              alignSelf: "flex-end",
+              marginRight: 10,
+              marginTop: -30
+            }}
+          />
+
+          <View style={{ alignItems: "center" }}>
             <Image
-              source={{ uri: `${url}/${p.coverphoto}` }}
-              style={styles.coverPhoto}
+              source={{ uri: `${url}/${route.params.user_img}` }}
+              style={styles.avartar}
             />
             <Icon
               name="camera"
-              size={30}
+              size={35}
               color="#fff"
               style={{
-                marginLeft: "80%",
-                alignSelf: "flex-end",
+                alignSelf: "center",
                 marginRight: 10,
                 marginTop: -30
               }}
+              onPress={() => navigation.navigate("ChooseUserImg")}
             />
-
-            <View style={{ alignItems: "center" }}>
-              <Image
-                source={{ uri: `${url}/${p.user_img}` }}
-                style={styles.avartar}
-              />
-              <Icon
-                name="camera"
-                size={30}
-                color="#fff"
-                style={{
-                  alignSelf: "center",
-                  marginRight: 10,
-                  marginTop: -30
-                }}
-              />
-            </View>
-            <View style={{ marginTop: "20%" }}>
-              <View style={styles.editName}>
-                <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-                  Edit Name
-                </Text>
-                <View style={styles.TextInputContainer}>
-                  <TextInput
-                    style={styles.inputField}
-                    placeholder={p.full_name}
-                    onChangeText={full_name => setfullName(full_name)}
-                  />
-                  {loadingName ? (
-                    <Text style={{ fontSize: 12 }}>Updating...</Text>
-                  ) : (
-                    <TouchableOpacity onPress={() => update_name()}>
-                      <Icon
-                        name="checkmark-circle-outline"
-                        size={35}
-                        style={{ marginLeft: 20 }}
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
+          </View>
+          <View style={{ marginTop: "20%" }}>
+            <View style={styles.editName}>
+              <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+                Edit Name
+              </Text>
+              <View style={styles.TextInputContainer}>
+                <TextInput
+                  style={styles.inputField}
+                  placeholder={route.params.full_name}
+                  onChangeText={full_name => setfullName(full_name)}
+                />
+                {loadingName ? (
+                  <Text style={{ fontSize: 12 }}>Updating...</Text>
+                ) : (
+                  <TouchableOpacity onPress={() => update_name()}>
+                    <Icon
+                      name="checkmark-circle-outline"
+                      size={35}
+                      style={{ marginLeft: 20 }}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
-              <View style={styles.editName}>
-                <Text style={{ fontWeight: "bold", fontSize: 18 }}>
-                  Edit Bio
-                </Text>
-                <View style={styles.TextInputContainer}>
-                  <TextInput
-                    style={styles.inputField2}
-                    placeholder={p.bio}
-                    multiline
-                    maxLength={70}
-                    onChangeText={bio => setBio(bio)}
-                  />
-                  {loadingBio ? (
-                    <Text style={{ fontSize: 12 }}>Updating...</Text>
-                  ) : (
-                    <TouchableOpacity onPress={() => update_bio()}>
-                      <Icon
-                        name="checkmark-circle-outline"
-                        size={35}
-                        style={{ marginLeft: 20 }}
-                      />
-                    </TouchableOpacity>
-                  )}
-                </View>
+            </View>
+            <View style={styles.editName}>
+              <Text style={{ fontWeight: "bold", fontSize: 18 }}>Edit Bio</Text>
+              <View style={styles.TextInputContainer}>
+                <TextInput
+                  style={styles.inputField2}
+                  placeholder={route.params.bio}
+                  multiline
+                  maxLength={70}
+                  onChangeText={bio => setBio(bio)}
+                />
+                {loadingBio ? (
+                  <Text style={{ fontSize: 12 }}>Updating...</Text>
+                ) : (
+                  <TouchableOpacity onPress={() => update_bio()}>
+                    <Icon
+                      name="checkmark-circle-outline"
+                      size={35}
+                      style={{ marginLeft: 20 }}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>
-        </ScrollView>
-      ))}
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -216,5 +235,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     fontSize: 20,
     height: 100
+  },
+  logoutButton: {
+    marginTop: 50,
+    marginBottom: 20,
+    alignSelf: "center",
+    backgroundColor: "rgb(172, 12, 12)",
+    width: 300,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    paddingTop: 10,
+    paddingBottom: 10
   }
 });

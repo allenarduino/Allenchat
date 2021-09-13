@@ -14,56 +14,40 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavigationContainer } from "@react-navigation/native";
-import { AuthContext } from "../App";
+import { AuthContext } from "../contexts/AuthContextProvider";
 import jwt_decode from "jwt-decode";
 import { Header } from "react-native-elements";
+import { useIsFocused } from "@react-navigation/native";
+import URL from "./url";
 import uuid from "uuid";
+const io = require("socket.io-client");
+
+const socket = io("http://10.74.9.244:3000", {
+  transports: ["websocket"]
+});
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-let url = "http://YOUR_IP:80/Backend";
-
 export const MessageContext = React.createContext();
 
 const DirectMessage = ({ route, navigation }) => {
-  const { state, dispatch } = React.useContext(AuthContext);
-
+  const { auth_state } = React.useContext(AuthContext);
   const scroll = React.useRef();
   const myinput = React.useRef();
+  let url = URL();
 
-  const initialState = {
-    messages: []
-  };
+  const isFocused = useIsFocused();
 
-  const ReducerFunction = (prevState, action) => {
-    switch (action.type) {
-      case "ADD_MESSAGE":
-        return {
-          ...prevState,
-          messages: [...prevState.messages, action.payload]
-        };
-      case "FETCH_MESSAGES":
-        return {
-          ...prevState,
-          messages: action.payload
-        };
-      default:
-        return prevState;
-    }
-  };
-
-  const [messagesState, setMessages] = React.useReducer(
-    ReducerFunction,
-    initialState
-  );
-
-  const token = state.token;
+  const token = auth_state.token;
   const decoded = jwt_decode(token);
   const user_id = decoded;
 
   const [message, setMessage] = React.useState("");
+  const [inputValue, setInputValue] = React.useState("");
+  const [messages, updateMessages] = React.useState([]);
   const [sent, updateSent] = React.useState(false);
+  const [max, setMax] = React.useState("");
 
   const sendMessage = async () => {
     const sender_id = user_id;
@@ -75,152 +59,156 @@ const DirectMessage = ({ route, navigation }) => {
       message: message
     };
 
-    if (message == "") {
+    if (message.trim().length === 0) {
       return;
     } else {
-      myinput.current.clear();
-      setMessages({ type: "ADD_MESSAGE", payload: offline_data });
-      const formdata = new FormData();
-      formdata.append("message", message);
-      formdata.append("receipient_id", receipient_id);
-      fetch(`${url}/send_message.php`, {
+      setInputValue("");
+      /* socket.emit("chat", offline_data);
+      socket.on("chat", data => {
+        alert(data);
+      });*/
+      updateMessages([...messages, offline_data]);
+      //Sending message to the server
+      let myHeaders = new Headers();
+      myHeaders.append("x-access-token", auth_state.token);
+      myHeaders.append("Content-Type", "application/json");
+      const data = { message: message };
+      fetch(`${url}/send_message/${receipient_id}`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${state.token}`
-        },
-        body: formdata
+        headers: myHeaders,
+        body: JSON.stringify(data)
       })
         .then(res => res.json())
         .then(data => {
-          updateSent(true);
+          console.log("Comment Created");
         })
         .catch(err => console.log(err));
     }
   };
 
   const fetch_messages = () => {
-    fetch(`${url}/fetch_messages.php/?user_id=${route.params.user_id}`, {
+    const receipient_id = route.params.user_id;
+    let myHeaders = new Headers();
+    myHeaders.append("x-access-token", auth_state.token);
+    myHeaders.append("Content-Type", "application/json");
+    fetch(`${url}/fetch_messages/${receipient_id}`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${state.token}`
-      }
+      headers: myHeaders
     })
       .then(res => res.json())
       .then(data => {
-        updateSent(true);
-        setMessages({ type: "FETCH_MESSAGES", payload: data });
+        updateMessages(data.messages);
+        controlLoading(false);
       })
       .catch(err => console.log(err));
+    setTimeout(fetch_messages, 2000);
   };
 
   React.useEffect(() => {
-    fetch_messages();
-  }, []);
+    if (isFocused) {
+      fetch_messages();
+    }
+  }, [navigation, isFocused]);
 
   return (
-    <MessageContext.Provider value={{ messagesState, setMessages }}>
-      <View style={{ flex: 1 }}>
-        <Header
-          placement="left"
-          leftComponent={
-            <Text onPress={() => navigation.goBack()} style={{ marginTop: 10 }}>
-              <Icon name="arrow-back" size={27} />
+    <View style={{ flex: 1 }}>
+      <Header
+        placement="left"
+        leftComponent={
+          <Text onPress={() => navigation.goBack()} style={{ marginTop: 10 }}>
+            <Icon name="arrow-back" size={27} />
+          </Text>
+        }
+        centerComponent={
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              source={{
+                uri: `${url}/${route.params.user_img}`
+              }}
+              style={styles.userAvatar}
+            />
+            <Text
+              style={{
+                marginLeft: 5,
+                marginTop: 10,
+                fontWeight: "bold",
+                fontSize: 18
+              }}
+            >
+              {route.params.full_name}
             </Text>
-          }
-          centerComponent={
-            <View style={{ flexDirection: "row" }}>
-              <Image
-                source={{
-                  uri: `${url}/code_reservoir/${route.params.user_img}`
-                }}
-                style={styles.userAvatar}
-              />
-              <Text
-                style={{
-                  marginLeft: 5,
-                  marginTop: 10,
-                  fontWeight: "bold",
-                  fontSize: 18
-                }}
-              >
-                {route.params.full_name}
-              </Text>
-            </View>
-          }
-          containerStyle={{
-            backgroundColor: "#fff",
-            height: 100,
-            flexDirection: "row",
-            justifyContent: "center",
-            display: "flex"
-          }}
-        />
+          </View>
+        }
+        containerStyle={{
+          backgroundColor: "#fff",
+          height: 100,
+          flexDirection: "row",
+          justifyContent: "center",
+          display: "flex"
+        }}
+      />
 
-        <KeyboardAvoidingView style={{ flex: 1 }}>
-          <ScrollView
-            ref={scroll}
-            onContentSizeChange={() =>
-              scroll.current.scrollToEnd({ animated: true })
-            }
-          >
-            <View style={{ marginTop: 100, marginBottom: 70 }}>
-              {messagesState.messages.map(m => (
-                <View>
-                  {m.sender_id == user_id ? (
-                    <View style={styles.chatBubble1}>
-                      <Text style={{ color: "#fff" }}>{m.message}</Text>
-                      {sent ? (
-                        <Icon
-                          name="checkmark"
-                          size={17}
-                          color="#fff"
-                          style={{ alignSelf: "flex-end", marginRight: -10 }}
-                        />
-                      ) : null}
-                    </View>
-                  ) : (
-                    <View style={styles.chatBubble2}>
-                      <Text style={{ color: "#333" }}>{m.message}</Text>
-                    </View>
-                  )}
-                </View>
-              ))}
-            </View>
-          </ScrollView>
-
-          <View style={{ flexDirection: "row", justifyContent: "center" }}>
-            <View style={styles.inputWrapper}>
-              <TextInput
-                placeholder="Type Message"
-                multiline
-                style={styles.inputField}
-                keyboardAppearance="dark"
-                keyboardType="default"
-                onChangeText={message => setMessage(message)}
-                value={state.password}
-                ref={myinput}
-              />
-              <Icon name="image" size={25} color="rgb(95, 32, 155)" />
-              <Icon
-                name="camera"
-                size={25}
-                style={{ marginLeft: 10 }}
-                color="rgb(95, 32, 155)"
-              />
-            </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : null}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+      >
+        <ScrollView
+          ref={scroll}
+          onContentSizeChange={() =>
+            scroll.current.scrollToEnd({ animated: true })
+          }
+        >
+          <View style={{ marginTop: 100, marginBottom: 70 }}>
+            {messages.map(m => (
+              <View>
+                {m.sender_id == user_id ? (
+                  <View style={styles.chatBubble1}>
+                    <Text style={{ color: "#fff" }}>{m.message}</Text>
+                  </View>
+                ) : (
+                  <View style={styles.chatBubble2}>
+                    <Text style={{ color: "#333" }}>{m.message}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View style={styles.inputWrapper}>
+            <TextInput
+              placeholder="Type Message"
+              multiline
+              style={styles.inputField}
+              keyboardAppearance="dark"
+              keyboardType="default"
+              onChangeText={(message, inputValue) => {
+                setMessage(message);
+                setInputValue(inputValue);
+              }}
+              value={inputValue}
+              ref={myinput}
+            />
+            <Icon name="image" size={25} color="rgb(95, 32, 155)" />
             <Icon
-              name="send"
-              size={30}
+              name="camera"
+              size={25}
               style={{ marginLeft: 10 }}
               color="rgb(95, 32, 155)"
-              onPress={() => sendMessage()}
             />
           </View>
-
-          <View style={{ marginTop: 10 }}></View>
-        </KeyboardAvoidingView>
-      </View>
-    </MessageContext.Provider>
+          <Icon
+            name="send"
+            size={30}
+            style={{ marginLeft: 10 }}
+            color="rgb(95, 32, 155)"
+            onPress={() => sendMessage()}
+          />
+        </View>
+        <View style={{ marginTop: 10 }}></View>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -248,28 +236,32 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   chatBubble1: {
-    padding: 10,
-    // marginLeft:'60%',
-    borderRadius: 5,
+    paddingRight: 20,
+    paddingLeft: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderRadius: 20,
     marginTop: 5,
     marginBottom: 5,
     marginRight: "4%",
     maxWidth: "80%",
     alignSelf: "flex-end",
-    borderRadius: 20,
+
     backgroundColor: "rgb(95, 32, 155)",
     color: "#fff"
   },
 
   chatBubble2: {
-    padding: 10,
-    borderRadius: 5,
+    paddingRight: 20,
+    paddingLeft: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+    borderRadius: 20,
     marginTop: 5,
     marginBottom: 5,
     maxWidth: "80%",
     marginLeft: "4%",
     alignSelf: "flex-start",
-    borderRadius: 20,
     backgroundColor: "#fff",
     color: "#fff"
   },

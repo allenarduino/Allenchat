@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Codereservoir",
-    "slug": "Codereservoir",
+    "name": "AllenChat",
+    "slug": "AllenChat",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,17 +13,13 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
+      "package": "com.jones-dev.com",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

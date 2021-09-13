@@ -7,19 +7,27 @@ import {
   TextInput
 } from "react-native";
 import BottomTab from "../Navigation/BottomNav";
+import URL from "./url";
 import AsyncStorage from "@react-native-community/async-storage";
-import SwitchNav from "../Navigation/SwitchNavOne";
-import { AuthContext } from "../App";
+import { AuthContext } from "../contexts/AuthContextProvider";
 import { AppStyles } from "../AppStyles";
+import * as Permissions from "expo-permissions";
+import * as Notifications from "expo-notifications";
 
 //I'm using this for email validation
 const validEmailRegex = RegExp(
   /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 );
 
-let url = "http://YOUR_IP:80/Backend";
-
 const LoginScreen = ({ navigation }) => {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false
+    })
+  });
+
   const initialState = {
     email: "",
     password: "",
@@ -30,8 +38,23 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const [state, setState] = React.useState(initialState);
-  const { dispatch } = React.useContext(AuthContext);
+  const { auth_state, auth_dispatch } = React.useContext(AuthContext);
   const [loading, controlLoading] = React.useState(false);
+  const [expoPushToken, setExpoPushToken] = React.useState("");
+  const [notification, setNotification] = React.useState(false);
+  let url = URL();
+
+  async function registerForPushNotificationsAsync() {
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+
+    const token = await Notifications.getExpoPushTokenAsync();
+
+    return JSON.stringify(token);
+  }
+
+  React.useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+  }, []);
 
   const emailInputchange = val => {
     if (validEmailRegex.test(val)) {
@@ -62,9 +85,11 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const login = () => {
-    const data = new FormData();
-    data.append("email", state.email);
-    data.append("password", state.password);
+    const data = {
+      email: state.email,
+      password: state.password
+      // n_token: expoPushToken
+    };
 
     if (
       state.email_is_valid == true &&
@@ -72,20 +97,22 @@ const LoginScreen = ({ navigation }) => {
       !state.password.trim().length == 0
     ) {
       controlLoading(true);
-
-      fetch(`${url}/user_login.php`, {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      fetch(`${url}/login`, {
         method: "POST",
-        body: data
+        body: JSON.stringify(data),
+        headers: myHeaders
       })
         .then(res => res.json())
         .then(data => {
           if (data.error == null) {
-            dispatch({
+            auth_dispatch({
               type: "LOGIN",
               payload: data
             });
-
             controlLoading(false);
+            console.log(data);
             navigation.navigate("BottomTab");
           } else {
             setState(prevState => ({
@@ -105,64 +132,77 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, styles.leftTitle]}>Sign In</Text>
-      <View style={styles.InputContainer}>
-        <TextInput
-          style={styles.body}
-          placeholder="E-mail or phone number"
-          onChangeText={email => {
-            setState(prevState => ({ ...prevState, email }));
-          }}
-          value={state.email}
-          placeholderTextColor={AppStyles.color.grey}
-          underlineColorAndroid="transparent"
-        />
-      </View>
-      {state.email_is_valid == false ? (
-        <Text style={{ color: "red", fontSize: 14 }}>
-          Please your email is not valid
+    <View
+      style={{
+        backgroundColor: "rgb(39, 12, 75)",
+        //justifyContent: 'space-around',
+        flex: 1
+      }}
+    >
+      <View
+        style={{
+          marginTop: 40,
+          justifyContent: "center",
+          alignItems: "center",
+          height: 70
+        }}
+      >
+        <Text style={{ color: "white", fontWeight: "bold", fontSize: 20 }}>
+          Log in
         </Text>
-      ) : null}
-      <Text style={{ color: "red", fontSize: 15 }}>{state.emailerr}</Text>
-      <View style={styles.InputContainer}>
-        <TextInput
-          style={styles.body}
-          secureTextEntry={true}
-          placeholder="Password"
-          onChangeText={password =>
-            setState(prevState => ({ ...prevState, password }))
-          }
-          value={state.password}
-          placeholderTextColor={AppStyles.color.grey}
-          underlineColorAndroid="transparent"
-        />
       </View>
-      <Text style={{ color: "red", fontSize: 15 }}>{state.error}</Text>
+      <View style={styles.container}>
+        <View style={styles.InputContainer}>
+          <TextInput
+            style={styles.body}
+            placeholder="E-mail or phone number"
+            onChangeText={email => {
+              setState(prevState => ({ ...prevState, email }));
+            }}
+            value={state.email}
+            placeholderTextColor={AppStyles.color.grey}
+            underlineColorAndroid="transparent"
+          />
+        </View>
+        {state.email_is_valid == false ? (
+          <Text style={{ color: "red", fontSize: 14 }}>
+            Please your email is not valid
+          </Text>
+        ) : null}
+        <Text style={{ color: "red", fontSize: 15 }}>{state.emailerr}</Text>
+        <View style={styles.InputContainer}>
+          <TextInput
+            style={styles.body}
+            secureTextEntry={true}
+            placeholder="Password"
+            onChangeText={password =>
+              setState(prevState => ({ ...prevState, password }))
+            }
+            value={state.password}
+            placeholderTextColor={AppStyles.color.grey}
+            underlineColorAndroid="transparent"
+          />
+        </View>
+        <Text style={{ color: "red", fontSize: 15 }}>{state.error}</Text>
+        {!loading ? (
+          <TouchableOpacity style={styles.loginContainer} onPress={login}>
+            <Text style={styles.loginText}>Log in</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.loginContainer}>
+            <Text style={styles.loginText}>Loading...</Text>
+          </TouchableOpacity>
+        )}
 
-      <TouchableOpacity
-        style={{ marginTop: 20 }}
-        onPress={() => navigation.navigate("LoginScreen")}
-      >
-        <Text style={{ color: "rgb(95, 32, 155)" }}>Forgot password?</Text>
-      </TouchableOpacity>
-
-      {!loading ? (
-        <TouchableOpacity style={styles.loginContainer} onPress={login}>
-          <Text style={styles.loginText}>Log in</Text>
+        <TouchableOpacity
+          style={{ marginTop: 20 }}
+          onPress={() => navigation.navigate("SignupScreen")}
+        >
+          <Text style={{ color: "rgb(39, 12, 75)", fontWeight: "bold" }}>
+            Not a member?
+          </Text>
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={styles.loginContainer}>
-          <Text style={styles.loginText}>Loading...</Text>
-        </TouchableOpacity>
-      )}
-
-      <TouchableOpacity
-        style={{ marginTop: 20 }}
-        onPress={() => navigation.navigate("SignupScreen")}
-      >
-        <Text style={{ color: "rgb(95, 32, 155)" }}>Not a member?</Text>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -172,7 +212,10 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center"
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40
   },
   or: {
     fontFamily: AppStyles.fontName.main,
@@ -204,7 +247,7 @@ const styles = StyleSheet.create({
   },
   loginContainer: {
     width: AppStyles.buttonWidth.main,
-    backgroundColor: AppStyles.color.tint,
+    backgroundColor: "rgb(39, 12, 75)",
     borderRadius: AppStyles.borderRadius.main,
     padding: 10,
     marginTop: 30,
@@ -234,17 +277,3 @@ const styles = StyleSheet.create({
     color: AppStyles.color.text
   }
 });
-
-/*
-const mapStateToProps = (state) => {
-    return { token: state.token,}
- };
-
-  
-
-const mapDispatchToProps = dispatch => ({
-    login:dispatch(login)
-});
-
- export default connect(mapStateToProps,mapDispatchToProps)(Login);
-*/

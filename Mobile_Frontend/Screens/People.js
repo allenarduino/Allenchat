@@ -5,82 +5,112 @@ import {
   View,
   Dimensions,
   Image,
-  StyleSheet
+  StyleSheet,
+  TextInput
 } from "react-native";
+import URL from "./url";
 import { List, ListItem, Header } from "react-native-elements";
 import { Avatar } from "react-native-elements/dist/avatar/Avatar";
 import { ScrollView, RectButton } from "react-native-gesture-handler";
-import { AuthContext } from "../App";
+import { AuthContext } from "../contexts/AuthContextProvider";
+import Icon from "react-native-vector-icons/Ionicons";
+import { useIsFocused } from "@react-navigation/native";
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
-let url = "http://YOUR_IP:80/Backend";
 const People = ({ navigation }) => {
   const [users, setUsers] = React.useState([]);
   const [loading, controlLoading] = React.useState(true);
-  const { state, dispatch } = React.useContext(AuthContext);
+  const [formVisible, setFormVisible] = React.useState(false);
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [search, setSearch] = React.useState("");
+  const { auth_state } = React.useContext(AuthContext);
+  let url = URL();
+  const isFocused = useIsFocused();
+
+  const showForm = () => {
+    setFormVisible(true);
+  };
 
   const fetch_users = () => {
-    fetch(`${url}/fetch_users.php`, {
-      methods: "GET",
-      "Content-Type": "application/json",
-      headers: {
-        Authorization: `Bearer ${state.token}`
-      }
+    let myHeaders = new Headers();
+    myHeaders.append("x-access-token", auth_state.token);
+    myHeaders.append("Content-Type", "application/json");
+    fetch(`${url}/users`, {
+      method: "GET",
+      headers: myHeaders
     })
       .then(res => res.json())
       .then(data => {
+        setFilteredData(data);
         setUsers(data);
         controlLoading(false);
       })
       .catch(err => console.log(err));
   };
 
+  const searchFilterFunction = text => {
+    if (text) {
+      const newData = users.filter(function(item) {
+        const itemData = item.full_name
+          ? item.full_name.toUpperCase()
+          : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilteredData(newData);
+      setSearch(text);
+    } else {
+      setFilteredData(users);
+      setSearch(text);
+    }
+  };
+
   React.useEffect(() => {
-    fetch_users();
-  }, []);
-  const renderItemComponent = data => {
-    <TouchableOpacity style={styles.container}>
-      <Image
-        styles={styles.userImage}
-        source={{ uri: `${url}/${data.user_img}` }}
-      />
-    </TouchableOpacity>;
-  };
-
-  const ItemSeparator = () => (
-    <View
-      style={{
-        height: 2,
-        backgroundColor: "rgba(0,0,0,0,0.5)",
-        marginLeft: 10,
-        marginRight: 10
-      }}
-    ></View>
-  );
-
-  const renderSeparator = () => {
-    return (
-      <View
-        style={{
-          height: 1,
-          width: "86%",
-          backgroundColor: "#CED0CE",
-          marginLeft: "5%"
-        }}
-      ></View>
-    );
-  };
+    if (isFocused) {
+      fetch_users();
+    }
+  }, [{ navigation }, useIsFocused]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <Header
         placement="left"
         leftComponent={
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "black" }}>
-            Find Users
-          </Text>
+          !formVisible ? (
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: "black" }}>
+              Find Users
+            </Text>
+          ) : null
+        }
+        centerComponent={
+          formVisible ? (
+            <TextInput
+              onChangeText={text => searchFilterFunction(text)}
+              value={search}
+              placeholder="Search users..."
+              style={{
+                borderRadius: 25,
+                borderColor: "whitesmoke",
+                backgroundColor: "whitesmoke",
+                width: "100%",
+                paddingTop: 12,
+                paddingBottom: 12,
+                paddingLeft: 10
+              }}
+            />
+          ) : null
+        }
+        rightComponent={
+          !formVisible ? (
+            <Icon
+              name="search"
+              style={{ marginTop: 6 }}
+              size={20}
+              onPress={() => showForm()}
+            />
+          ) : null
         }
         containerStyle={{
           backgroundColor: "#fff",
@@ -105,10 +135,12 @@ const People = ({ navigation }) => {
             />
           </View>
         ) : (
-          users.map(item => (
+          filteredData.map(item => (
             <RectButton
               onPress={() =>
-                navigation.navigate("SingleProfile", { user_id: item.user_id })
+                navigation.navigate("SingleProfile", {
+                  user_id: item.user_id
+                })
               }
             >
               <View

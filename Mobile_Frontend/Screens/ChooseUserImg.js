@@ -10,7 +10,7 @@ const options = {
   allowsEditing: true
 };
 
-export default class SelectPhotoScreen extends Component {
+export default class ChooseUserImg extends Component {
   state = {};
 
   _selectPhoto = async () => {
@@ -18,7 +18,7 @@ export default class SelectPhotoScreen extends Component {
     if (status) {
       const result = await ImagePicker.launchImageLibraryAsync(options);
       if (!result.cancelled) {
-        this.props.navigation.navigate("NewPostScreen", { image: result.uri });
+        this.props.navigation.navigate("UpdateUserImg", { image: result.uri });
       }
     }
   };
@@ -28,7 +28,7 @@ export default class SelectPhotoScreen extends Component {
     if (status) {
       const result = await ImagePicker.launchCameraAsync(options);
       if (!result.cancelled) {
-        this.props.navigation.navigate("NewPostScreen", { image: result.uri });
+        this.props.navigation.navigate("UpdateUserImg", { image: result.uri });
       }
     }
   };
