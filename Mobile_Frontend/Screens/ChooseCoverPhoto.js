@@ -10,7 +10,7 @@ const options = {
   allowsEditing: true
 };
 
-export default class ChooseCoverPhoto extends Component {
+const ChooseCoverPhoto = () => {
   state = {};
 
   _selectPhoto = async () => {
@@ -43,21 +43,21 @@ export default class ChooseCoverPhoto extends Component {
     }
   };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text onPress={this._selectPhoto} style={styles.text}>
-          <Icon name="image" size={20} />
-          Select Photo
-        </Text>
-        <Text onPress={this._takePhoto} style={styles.text}>
-          <Icon name="camera" size={20} />
-          Take Photo
-        </Text>
-      </View>
-    );
-  }
-}
+  return (
+    <View style={styles.container}>
+      <Text onPress={this._selectPhoto} style={styles.text}>
+        <Icon name="image" size={20} />
+        Select Photo
+      </Text>
+      <Text onPress={this._takePhoto} style={styles.text}>
+        <Icon name="camera" size={20} />
+        Take Photo
+      </Text>
+    </View>
+  );
+};
+
+export default ChooseCoverPhoto;
 
 const styles = StyleSheet.create({
   container: {
