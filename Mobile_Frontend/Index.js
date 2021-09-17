@@ -10,7 +10,6 @@ import {
   Image
 } from "react-native";
 import BottomTab from "./Navigation/BottomNav";
-import { NavigationContainer } from "@react-navigation/native";
 import MainStackNavigatorOne from "./Navigation/StackNavigationOne";
 import AsyncStorage from "@react-native-community/async-storage";
 import { AuthContext } from "./contexts/AuthContextProvider";
