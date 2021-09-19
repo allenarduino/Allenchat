@@ -78,16 +78,10 @@ router.post("/login", (req, res) => {
 
 //For viewing user profile
 router.get("/user_profile/:user_id", auth, (req, res) => {
-  const auth_user_id = req.user_id;
   const user_id = req.params.user_id;
-  const sql = `SELECT* FROM users WHERE user_id=?;
-  SELECT  p_id,post_caption,post_media,is_video,owner_id,u.full_name,u.user_img,u.user_id,
-  (SELECT post_liker FROM post_likes pl WHERE pl.post_liker=? AND pl.L_post_id=p.p_id) as post_liker,
-  (SELECT COUNT(*) FROM post_comments WHERE p.p_id=post_comments.C_post_id )as total_comments,
-  (SELECT COUNT(*) FROM post_likes WHERE p.p_id=post_likes.L_post_id) as total_likes
-  FROM posts p,users u WHERE u.user_id=p.owner_id AND p.owner_id=? ORDER BY p.p_id DESC`;
-  db.query(sql, [user_id, auth_user_id, user_id], function(err, data) {
-    res.status(200).json({ user_profile: data[0], user_posts: data[1] });
+  const sql = `SELECT* FROM users WHERE user_id=?`;
+  db.query(sql, [user_id], function(err, data) {
+    res.status(200).json({ user_profile: data });
   });
 });
 

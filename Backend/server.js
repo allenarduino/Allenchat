@@ -26,6 +26,6 @@ app.use(userRoute);
 app.use(messageRoute);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, function() {
+module.exports = app.listen(PORT, function() {
   console.log(`Server running on port:${PORT}`);
 });
