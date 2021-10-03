@@ -206,6 +206,10 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold"
   },
+  bio: {
+    alignSelf: "center",
+    textAlign: "center"
+  },
   editProfile: {
     backgroundColor: "rgb(95, 32, 155)",
     width: "50%",

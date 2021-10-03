@@ -1,3 +1,3 @@
 //Backend API Endpoint
-const url = () => "http://10.74.13.247:5000";
+const url = () => "http://192.168.42.214:5000";
 export default url;
