@@ -8,12 +8,9 @@ import {
   Image,
   ScrollView
 } from "react-native";
-import BottomTab from "../Navigation/BottomNav";
-import AsyncStorage from "@react-native-community/async-storage";
 import { AppStyles } from "../AppStyles";
-import { Header } from "react-native-elements";
-import Icon from "react-native-vector-icons/Ionicons";
 import URL from "./url";
+
 //I'm using this for email validation
 const validEmailRegex = RegExp(
   /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
