@@ -158,7 +158,8 @@ const People = ({ navigation }) => {
                 <Text
                   style={{
                     color: "#000",
-                    marginLeft: 10
+                    marginLeft: 10,
+                    fontWeight:"bold"
                   }}
                 >
                   {`${item.full_name}`}

@@ -18,7 +18,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.jones-dev.com",
+      "package": "com.example.app",
       "versionCode": 1
     },
     "web": {

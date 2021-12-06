@@ -1,8 +1,10 @@
 {
-  "hostType": "lan",
+  "hostType": "localhost",
   "lanType": "ip",
   "dev": true,
   "minify": false,
-  "urlRandomness": "eu-jsp",
-  "https": false
+  "urlRandomness": "cc-dr3",
+  "https": false,
+  "scheme": null,
+  "devClient": false
 }
