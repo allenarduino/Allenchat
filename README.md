@@ -11,8 +11,17 @@
 - Create a database according to the schema design in the Database directory
 - cd into Frontend directory and run npm start.
 
-## Screenshots
 
+## Database Schema
+
+
+<img
+		width="100%"
+		alt="Capture 1"
+		src="https://github.com/allenarduino/Allenchat/blob/master/Database/allen_chat_schema.png">
+
+
+## Screenshots
 
 <img
 		width="210"
