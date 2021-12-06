@@ -42,8 +42,7 @@
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot6.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot6.png">
 <img
 		width="210"
 		alt="Capture 4"
