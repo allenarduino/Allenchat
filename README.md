@@ -21,23 +21,24 @@
 <img
 		width="210"
 		alt="Capture 2"
-		src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot2.png"
+		src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot2.png">
 
 <img
 		width="210"
 		alt="Capture 3"
-		src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot3.png"
+		src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot3.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot4.png"
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot4.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot5.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot5.png">
+
+
 <img
 		width="210"
 		alt="Capture 4"
@@ -46,104 +47,87 @@
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot7.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot7.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-		src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot8.png"
->
+		src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot8.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot9.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot9.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot10.png"
->
+		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot10.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot11.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot11.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot12.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot12.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot13.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot13.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot14.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot14.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot15.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot15.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot16.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot16.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot17.png"
->
+		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot17.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot18.png"
->
+		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot18.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot19.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot19.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot20.png"
->
+		    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot20.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot21.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot21.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot22.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot22.png">
 
 <img
 		width="210"
 		alt="Capture 4"
-	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot23.png"
->
+	    src="https://github.com/allenarduino/Allenchat/blob/master/screenshots/screenshot23.png">
 
 
 ## Installation and usage
